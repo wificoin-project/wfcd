@@ -264,11 +264,12 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		divPow := new(big.Int).div(oldPow, 4)
 		newPow := new(big.Int).add(oldePow, divPow)
 		
-		nPowBit := BigToCompact(newPow)
-		if nPowBit >= b.chainParams.PowLimitBits {
+		if newPow.Cmp(b.chainParams.PowLimit) > 0 {
 			return b.chainParams.PowLimitBits, nil
 		}
-		return nPowBit.bits, nil
+		
+		nPowBit := BigToCompact(newPow)
+		return nPowBit, nil
 	}
 
 	// Get the block node at the previous retarget (targetTimespan days

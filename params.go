@@ -28,7 +28,7 @@ type params struct {
 // to emulate the full reference implementation RPC API.
 var mainNetParams = params{
 	Params:  &chaincfg.MainNetParams,
-	rpcPort: "8334",
+	rpcPort: "9665",
 }
 
 // regressionNetParams contains parameters specific to the regression test

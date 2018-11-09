@@ -261,7 +261,7 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		}
 		
 		oldPow := CompactToBig(lastNode.bits)
-		divPow := new(big.Int).div(oldPow, 4)
+		divPow := new(big.Int).Rst(oldPow, 2)
 		newPow := new(big.Int).add(oldePow, divPow)
 		
 		if newPow.Cmp(b.chainParams.PowLimit) > 0 {

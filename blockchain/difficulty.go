@@ -245,10 +245,30 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 			// not have the special minimum difficulty rule applied.
 			return b.findPrevTestNetDifficulty(lastNode), nil
 		}
-
-		// For the main network (or any unrecognized networks), simply
-		// return the previous block's difficulty requirements.
-		return lastNode.bits, nil
+		
+		if lastNode.bits >= b.chainParams.PowLimitBits {
+			return b.chainParams.PowLimitBits, nil
+		}
+			
+		pre6Node := lastNode.RelativeAncestor(6);
+		if pr6Node == nil {
+			return b.chainParams.PowLimitBits, nil
+		}
+		
+		mtp6Timespan := int64(lastNode.CalcPastMedianTime() - pre6Node.CalcPastMedianTime());
+		if mtp6Timespan < 720 {
+			return lastNode.bits, nil
+		}
+		
+		oldPow := CompactToBig(lastNode.bits)
+		divPow := new(big.Int).div(oldPow, 4)
+		newPow := new(big.Int).add(oldePow, divPow)
+		
+		nPowBit := BigToCompact(newPow)
+		if nPowBit >= b.chainParams.PowLimitBits {
+			return b.chainParams.PowLimitBits, nil
+		}
+		return nPowBit.bits, nil
 	}
 
 	// Get the block node at the previous retarget (targetTimespan days

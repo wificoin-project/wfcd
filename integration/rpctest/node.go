@@ -14,8 +14,8 @@ import (
 	"runtime"
 	"time"
 
-	rpc "github.com/btcsuite/btcd/rpcclient"
-	"github.com/btcsuite/btcutil"
+	"github.com/wificoin-project/wfcutil"
+	rpc "github.com/wificoin-project/wfcd/rpcclient"
 )
 
 // nodeConfig contains all the args, and data required to launch a btcd process

@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/blockchain/indexers"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/limits"
 	"github.com/btcsuite/btclog"
+	"github.com/wificoin-project/wfcd/blockchain"
+	"github.com/wificoin-project/wfcd/blockchain/indexers"
+	"github.com/wificoin-project/wfcd/database"
+	"github.com/wificoin-project/wfcd/limits"
 )
 
 const (

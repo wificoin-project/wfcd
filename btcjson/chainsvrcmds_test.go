@@ -11,8 +11,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/btcsuite/btcd/btcjson"
-	"github.com/btcsuite/btcd/wire"
+	"github.com/wificoin-project/wfcd/btcjson"
+	"github.com/wificoin-project/wfcd/wire"
 )
 
 // TestChainSvrCmds tests all of the chain server commands marshal and unmarshal

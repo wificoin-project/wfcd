@@ -13,9 +13,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/btcsuite/btcd/btcjson"
-	"github.com/btcsuite/btcutil"
+	"github.com/wificoin-project/wfcutil"
 	flags "github.com/jessevdk/go-flags"
+	"github.com/wificoin-project/wfcd/btcjson"
 )
 
 const (

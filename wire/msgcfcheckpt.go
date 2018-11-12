@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/wificoin-project/wfcd/chaincfg/chainhash"
 )
 
 const (

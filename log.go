@@ -3,24 +3,24 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package main
+package wfcd
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/btcsuite/btcd/addrmgr"
-	"github.com/btcsuite/btcd/blockchain"
-	"github.com/btcsuite/btcd/blockchain/indexers"
-	"github.com/btcsuite/btcd/connmgr"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/mempool"
-	"github.com/btcsuite/btcd/mining"
-	"github.com/btcsuite/btcd/mining/cpuminer"
-	"github.com/btcsuite/btcd/netsync"
-	"github.com/btcsuite/btcd/peer"
-	"github.com/btcsuite/btcd/txscript"
+	"github.com/wificoin-project/wfcd/addrmgr"
+	"github.com/wificoin-project/wfcd/blockchain"
+	"github.com/wificoin-project/wfcd/blockchain/indexers"
+	"github.com/wificoin-project/wfcd/connmgr"
+	"github.com/wificoin-project/wfcd/database"
+	"github.com/wificoin-project/wfcd/mempool"
+	"github.com/wificoin-project/wfcd/mining"
+	"github.com/wificoin-project/wfcd/mining/cpuminer"
+	"github.com/wificoin-project/wfcd/netsync"
+	"github.com/wificoin-project/wfcd/peer"
+	"github.com/wificoin-project/wfcd/txscript"
 
 	"github.com/btcsuite/btclog"
 	"github.com/jrick/logrotate/rotator"

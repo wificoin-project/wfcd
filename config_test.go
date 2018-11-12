@@ -1,4 +1,4 @@
-package main
+package wfcd
 
 import (
 	"io/ioutil"

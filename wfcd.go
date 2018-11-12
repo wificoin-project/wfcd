@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package main
+package wfcd
 
 import (
 	"fmt"
@@ -15,9 +15,9 @@ import (
 	"runtime/debug"
 	"runtime/pprof"
 
-	"github.com/btcsuite/btcd/blockchain/indexers"
-	"github.com/btcsuite/btcd/database"
-	"github.com/btcsuite/btcd/limits"
+	"github.com/wificoin-project/wfcd/blockchain/indexers"
+	"github.com/wificoin-project/wfcd/database"
+	"github.com/wificoin-project/wfcd/limits"
 )
 
 const (

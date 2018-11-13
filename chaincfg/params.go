@@ -228,7 +228,6 @@ var MainNetParams = Params{
 	DefaultPort: "9666",
 	DNSSeeds: []DNSSeed{
 		{"seeds.wificoin.talkblock.org", false},
-		{"wfcseeds.verywifi.cn", false},
 		{"wfc.wificoin.club", false},
 		{"wfc.xyblock.net", false},
 	},

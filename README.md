@@ -64,13 +64,13 @@ recommended that `GOPATH` is set to a directory in your home directory such as
 
 ```bash
 $ go get -u github.com/Masterminds/glide
-$ git clone https://github.com/btcsuite/btcd $GOPATH/src/github.com/btcsuite/btcd
-$ cd $GOPATH/src/github.com/btcsuite/btcd
+$ git clone https://github.com/wificoin-project/wfcd $GOPATH/src/github.com/wificoin-project/wfcd
+$ cd $GOPATH/src/github.com/wificoin-project/wfcd
 $ glide install
 $ go install . ./cmd/...
 ```
 
-- btcd (and utilities) will now be installed in ```$GOPATH/bin```.  If you did
+- wfcd (and utilities) will now be installed in ```$GOPATH/bin```.  If you did
   not already add the bin directory to your system path during Go installation,
   we recommend you do so now.
 

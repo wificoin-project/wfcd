@@ -40,7 +40,7 @@ var winServiceMain func() (bool, error)
 // optional serverChan parameter is mainly used by the service code to be
 // notified with the server once it is setup so it can gracefully stop it when
 // requested from the service control manager.
-func btcdMain(serverChan chan<- *server) error {
+func wfcdMain(serverChan chan<- *server) error {
 	// Load configuration and parse command line.  This function also
 	// initializes logging and configures it accordingly.
 	tcfg, _, err := loadConfig()
@@ -58,20 +58,20 @@ func btcdMain(serverChan chan<- *server) error {
 	// triggered either from an OS signal such as SIGINT (Ctrl+C) or from
 	// another subsystem such as the RPC server.
 	interrupt := interruptListener()
-	defer btcdLog.Info("Shutdown complete")
+	defer wfcdLog.Info("Shutdown complete")
 
 	// Show version at startup.
-	btcdLog.Infof("Version %s", version())
+	wfcdLog.Infof("Version %s", version())
 
 	// Enable http profiling server if requested.
 	if cfg.Profile != "" {
 		go func() {
 			listenAddr := net.JoinHostPort("", cfg.Profile)
-			btcdLog.Infof("Profile server listening on %s", listenAddr)
+			wfcdLog.Infof("Profile server listening on %s", listenAddr)
 			profileRedirect := http.RedirectHandler("/debug/pprof",
 				http.StatusSeeOther)
 			http.Handle("/", profileRedirect)
-			btcdLog.Errorf("%v", http.ListenAndServe(listenAddr, nil))
+			wfcdLog.Errorf("%v", http.ListenAndServe(listenAddr, nil))
 		}()
 	}
 
@@ -79,7 +79,7 @@ func btcdMain(serverChan chan<- *server) error {
 	if cfg.CPUProfile != "" {
 		f, err := os.Create(cfg.CPUProfile)
 		if err != nil {
-			btcdLog.Errorf("Unable to create cpu profile: %v", err)
+			wfcdLog.Errorf("Unable to create cpu profile: %v", err)
 			return err
 		}
 		pprof.StartCPUProfile(f)
@@ -89,7 +89,7 @@ func btcdMain(serverChan chan<- *server) error {
 
 	// Perform upgrades to btcd as new versions require it.
 	if err := doUpgrades(); err != nil {
-		btcdLog.Errorf("%v", err)
+		wfcdLog.Errorf("%v", err)
 		return err
 	}
 
@@ -101,12 +101,12 @@ func btcdMain(serverChan chan<- *server) error {
 	// Load the block database.
 	db, err := loadBlockDB()
 	if err != nil {
-		btcdLog.Errorf("%v", err)
+		wfcdLog.Errorf("%v", err)
 		return err
 	}
 	defer func() {
 		// Ensure the database is sync'd and closed on shutdown.
-		btcdLog.Infof("Gracefully shutting down the database...")
+		wfcdLog.Infof("Gracefully shutting down the database...")
 		db.Close()
 	}()
 
@@ -121,7 +121,7 @@ func btcdMain(serverChan chan<- *server) error {
 	// drops the address index since it relies on it.
 	if cfg.DropAddrIndex {
 		if err := indexers.DropAddrIndex(db, interrupt); err != nil {
-			btcdLog.Errorf("%v", err)
+			wfcdLog.Errorf("%v", err)
 			return err
 		}
 
@@ -129,7 +129,7 @@ func btcdMain(serverChan chan<- *server) error {
 	}
 	if cfg.DropTxIndex {
 		if err := indexers.DropTxIndex(db, interrupt); err != nil {
-			btcdLog.Errorf("%v", err)
+			wfcdLog.Errorf("%v", err)
 			return err
 		}
 
@@ -137,7 +137,7 @@ func btcdMain(serverChan chan<- *server) error {
 	}
 	if cfg.DropCfIndex {
 		if err := indexers.DropCfIndex(db, interrupt); err != nil {
-			btcdLog.Errorf("%v", err)
+			wfcdLog.Errorf("%v", err)
 			return err
 		}
 
@@ -149,12 +149,12 @@ func btcdMain(serverChan chan<- *server) error {
 		interrupt)
 	if err != nil {
 		// TODO: this logging could do with some beautifying.
-		btcdLog.Errorf("Unable to start server on %v: %v",
+		wfcdLog.Errorf("Unable to start server on %v: %v",
 			cfg.Listeners, err)
 		return err
 	}
 	defer func() {
-		btcdLog.Infof("Gracefully shutting down the server...")
+		wfcdLog.Infof("Gracefully shutting down the server...")
 		server.Stop()
 		server.WaitForShutdown()
 		srvrLog.Infof("Server shutdown complete")
@@ -182,7 +182,7 @@ func removeRegressionDB(dbPath string) error {
 	// Remove the old regression test database if it already exists.
 	fi, err := os.Stat(dbPath)
 	if err == nil {
-		btcdLog.Infof("Removing regression test database from '%s'", dbPath)
+		wfcdLog.Infof("Removing regression test database from '%s'", dbPath)
 		if fi.IsDir() {
 			err := os.RemoveAll(dbPath)
 			if err != nil {
@@ -234,7 +234,7 @@ func warnMultipleDBs() {
 	// Warn if there are extra databases.
 	if len(duplicateDbPaths) > 0 {
 		selectedDbPath := blockDbPath(cfg.DbType)
-		btcdLog.Warnf("WARNING: There are multiple block chain databases "+
+		wfcdLog.Warnf("WARNING: There are multiple block chain databases "+
 			"using different database types.\nYou probably don't "+
 			"want to waste disk space by having more than one.\n"+
 			"Your current database is located at [%v].\nThe "+
@@ -253,7 +253,7 @@ func loadBlockDB() (database.DB, error) {
 	// handle it uniquely.  We also don't want to worry about the multiple
 	// database type warnings when running with the memory database.
 	if cfg.DbType == "memdb" {
-		btcdLog.Infof("Creating block database in memory.")
+		wfcdLog.Infof("Creating block database in memory.")
 		db, err := database.Create(cfg.DbType)
 		if err != nil {
 			return nil, err
@@ -270,7 +270,7 @@ func loadBlockDB() (database.DB, error) {
 	// each run, so remove it now if it already exists.
 	removeRegressionDB(dbPath)
 
-	btcdLog.Infof("Loading block database from '%s'", dbPath)
+	wfcdLog.Infof("Loading block database from '%s'", dbPath)
 	db, err := database.Open(cfg.DbType, dbPath, activeNetParams.Net)
 	if err != nil {
 		// Return the error if it's not because the database doesn't
@@ -292,7 +292,7 @@ func loadBlockDB() (database.DB, error) {
 		}
 	}
 
-	btcdLog.Info("Block database loaded")
+	wfcdLog.Info("Block database loaded")
 	return db, nil
 }
 
@@ -327,7 +327,7 @@ func main() {
 	}
 
 	// Work around defer not working after os.Exit()
-	if err := btcdMain(nil); err != nil {
+	if err := wfcdMain(nil); err != nil {
 		os.Exit(1)
 	}
 }

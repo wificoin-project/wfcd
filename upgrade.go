@@ -29,7 +29,7 @@ func dirEmpty(dirPath string) (bool, error) {
 }
 
 // oldBtcdHomeDir returns the OS specific home directory btcd used prior to
-// version 0.3.3.  This has since been replaced with btcutil.AppDataDir, but
+// version 0.3.3.  This has since been replaced with wfcutil.AppDataDir, but
 // this function is still provided for the automatic upgrade path.
 func oldBtcdHomeDir() string {
 	// Search for Windows APPDATA first.  This won't exist on POSIX OSes.
@@ -117,7 +117,7 @@ func upgradeDataPaths() error {
 	// Only migrate if the old path exists and the new one doesn't.
 	if fileExists(oldHomePath) && !fileExists(newHomePath) {
 		// Create the new path.
-		btcdLog.Infof("Migrating application home path from '%s' to '%s'",
+		wfcdLog.Infof("Migrating application home path from '%s' to '%s'",
 			oldHomePath, newHomePath)
 		err := os.MkdirAll(newHomePath, 0700)
 		if err != nil {
@@ -155,7 +155,7 @@ func upgradeDataPaths() error {
 				return err
 			}
 		} else {
-			btcdLog.Warnf("Not removing '%s' since it contains files "+
+			wfcdLog.Warnf("Not removing '%s' since it contains files "+
 				"not created by this application.  You may "+
 				"want to manually move them or delete them.",
 				oldHomePath)

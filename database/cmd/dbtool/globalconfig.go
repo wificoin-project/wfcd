@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	btcdHomeDir     = btcutil.AppDataDir("btcd", false)
+	btcdHomeDir     = wfcutil.AppDataDir("btcd", false)
 	knownDbTypes    = database.SupportedDrivers()
 	activeNetParams = &chaincfg.MainNetParams
 

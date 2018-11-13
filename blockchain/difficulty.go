@@ -251,18 +251,18 @@ func (b *BlockChain) calcNextRequiredDifficulty(lastNode *blockNode, newBlockTim
 		}
 			
 		pre6Node := lastNode.RelativeAncestor(6);
-		if pr6Node == nil {
+		if pre6Node == nil {
 			return b.chainParams.PowLimitBits, nil
 		}
 		
-		mtp6Timespan := int64(lastNode.CalcPastMedianTime() - pre6Node.CalcPastMedianTime());
+		mtp6Timespan := lastNode.CalcPastMedianTime().Unix() - pre6Node.CalcPastMedianTime().Unix();
 		if mtp6Timespan < 720 {
 			return lastNode.bits, nil
 		}
 		
 		oldPow := CompactToBig(lastNode.bits)
-		divPow := new(big.Int).Rst(oldPow, 2)
-		newPow := new(big.Int).add(oldePow, divPow)
+		divPow := new(big.Int).Rsh(oldPow, 2)
+		newPow := new(big.Int).Add(oldPow, divPow)
 		
 		if newPow.Cmp(b.chainParams.PowLimit) > 0 {
 			return b.chainParams.PowLimitBits, nil

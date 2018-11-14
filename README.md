@@ -1,9 +1,9 @@
 wfcd
 ====
 
-[![Build Status](https://travis-ci.org/btcsuite/btcd.png?branch=master)](https://travis-ci.org/btcsuite/btcd)
+[![Build Status](https://travis-ci.org/wificoin-project/wfcd.png?branch=master)](https://travis-ci.org/wificoin-project/wfcd)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/btcsuite/btcd)
+[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/wificoin-project/wfcd)
 
 wfcd is an alternative full node wificoin implementation written in Go (golang).
 

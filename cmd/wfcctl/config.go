@@ -26,10 +26,10 @@ const (
 )
 
 var (
-	btcdHomeDir           = wfcutil.AppDataDir("btcd", false)
-	btcctlHomeDir         = wfcutil.AppDataDir("btcctl", false)
-	btcwalletHomeDir      = wfcutil.AppDataDir("btcwallet", false)
-	defaultConfigFile     = filepath.Join(btcctlHomeDir, "btcctl.conf")
+	btcdHomeDir           = wfcutil.AppDataDir("wfcd", false)
+	btcctlHomeDir         = wfcutil.AppDataDir("wfcctl", false)
+	btcwalletHomeDir      = wfcutil.AppDataDir("wfcwallet", false)
+	defaultConfigFile     = filepath.Join(btcctlHomeDir, "wfcctl.conf")
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(btcdHomeDir, "rpc.cert")
 	defaultWalletCertFile = filepath.Join(btcwalletHomeDir, "rpc.cert")
@@ -132,7 +132,7 @@ func normalizeAddress(addr string, useTestNet3, useSimNet, useWallet bool) strin
 			if useWallet {
 				defaultPort = "8332"
 			} else {
-				defaultPort = "8334"
+				defaultPort = "9665"
 			}
 		}
 
@@ -214,9 +214,9 @@ func loadConfig() (*config, []string, error) {
 		// Use config file for RPC server to create default btcctl config
 		var serverConfigPath string
 		if preCfg.Wallet {
-			serverConfigPath = filepath.Join(btcwalletHomeDir, "btcwallet.conf")
+			serverConfigPath = filepath.Join(btcwalletHomeDir, "wfcwallet.conf")
 		} else {
-			serverConfigPath = filepath.Join(btcdHomeDir, "btcd.conf")
+			serverConfigPath = filepath.Join(btcdHomeDir, "wfcd.conf")
 		}
 
 		err := createDefaultConfigFile(preCfg.ConfigFile, serverConfigPath)

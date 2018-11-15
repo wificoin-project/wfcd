@@ -24,7 +24,7 @@ var (
 
 	// mainPowLimit is the highest proof of work value a Bitcoin block can
 	// have for the main network.  It is the value 2^224 - 1.
-	mainPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
+	mainPowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 244), bigOne)
 
 	// regressionPowLimit is the highest proof of work value a Bitcoin block
 	// can have for the regression test network.  It is the value 2^255 - 1.
@@ -33,7 +33,7 @@ var (
 	// testNet3PowLimit is the highest proof of work value a Bitcoin block
 	// can have for the test network (version 3).  It is the value
 	// 2^224 - 1.
-	testNet3PowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 224), bigOne)
+	testNet3PowLimit = new(big.Int).Sub(new(big.Int).Lsh(bigOne, 244), bigOne)
 
 	// simNetPowLimit is the highest proof of work value a Bitcoin block
 	// can have for the simulation test network.  It is the value 2^255 - 1.

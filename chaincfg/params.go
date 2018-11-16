@@ -242,9 +242,9 @@ var MainNetParams = Params{
 	BIP0066Height:            363725, // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
 	CoinbaseMaturity:         30,
 	SubsidyReductionInterval: 1680000,
-	TargetTimespan:           time.Minute * 6 * 24 * 14, // 1.4 days
-	TargetTimePerBlock:       time.Minute * 1,    // 1 minutes
-	RetargetAdjustmentFactor: 4,                   // 25% less, 400% more
+	TargetTimespan:           time.Minute * 6 * 24 * 14 - 1, // 1.4 days
+	TargetTimePerBlock:       time.Minute * 1,         // 1 minutes
+	RetargetAdjustmentFactor: 4,                       // 25% less, 400% more
 	ReduceMinDifficulty:      false,
 	MinDiffReductionTime:     0,
 	GenerateSupported:        false,
@@ -254,7 +254,6 @@ var MainNetParams = Params{
 		{100, newHashFromStr("000a7135d35caba8f28384255edb21929bb96101fd14b68d05cc7247c630863f")},
 		{1000, newHashFromStr("000e7b1fafafb23421cddb4087010af2f4389994c5314a88fb6e80f4513956c2")},
 		{10000, newHashFromStr("000000241a8b2e6062376af7d81cd84b3403f32ec4f92b574fdeee2a34004138")},
-		{100000, newHashFromStr("000000000699fc3f12f6ec7c1a65454195be3a61d0b26011fd9e6b5bbbb8fc7e")},
 	},
 
 	// Consensus rule change deployments.

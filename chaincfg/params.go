@@ -385,7 +385,7 @@ var TestNet3Params = Params{
 	Net:         wire.TestNet3,
 	DefaultPort: "19555",
 	DNSSeeds: []DNSSeed{
-		{"wfc.xyblock.net", false},
+		{"wfc.wificoin.club", false},
 	},
 
 	// Chain parameters

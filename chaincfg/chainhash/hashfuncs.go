@@ -31,3 +31,11 @@ func DoubleHashH(b []byte) Hash {
 	first := sha256.Sum256(b)
 	return Hash(sha256.Sum256(first[:]))
 }
+
+// DoubleHashHV2 calculates hash(hash(b)) and returns the resulting bytes as a
+// Hash.
+func DoubleHashHV2(b []byte) Hash {
+    first := sha512.Sum512(b)
+    return Hash(sha256.Sum256(first[:]))
+}
+    

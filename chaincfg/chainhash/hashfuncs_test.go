@@ -133,4 +133,16 @@ func TestDoubleHashFuncs(t *testing.T) {
 			continue
 		}
 	}
+
+	// Ensure the hash function which returns a Hash returns the expected
+	// result.
+	for _, test := range tests {
+		hash := DoubleHashHV2([]byte(test.in))
+		h := fmt.Sprintf("%x", hash[:])
+		if h != test.out {
+			t.Errorf("DoubleHashHV2(%q) = %s, want %s", test.in, h,
+				test.out)
+			continue
+		}
+	}
 }

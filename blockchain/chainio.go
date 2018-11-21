@@ -1174,9 +1174,9 @@ func (b *BlockChain) initChainState() error {
 			if lastNode == nil {
 				blockHash := header.BlockHash()
 				if !blockHash.IsEqual(b.chainParams.GenesisHash) {
-					return AssertError(fmt.Sprintf("initChainState: Expected "+
+					return AssertError(fmt.Sprintf("initChainState: Expected %s " +
 						"first entry in block index to be genesis block, "+
-						"found %s", blockHash))
+						"found %s", b.chainParams.GenesisHash, blockHash))
 				}
 			} else if header.PrevBlock == lastNode.hash {
 				// Since we iterate block headers in order of height, if the

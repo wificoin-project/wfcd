@@ -6,6 +6,7 @@
 package chainhash
 
 import "crypto/sha256"
+import "crypto/sha512"
 
 // HashB calculates hash(b) and returns the resulting bytes.
 func HashB(b []byte) []byte {

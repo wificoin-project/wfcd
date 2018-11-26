@@ -143,6 +143,14 @@ func wfcdMain(serverChan chan<- *server) error {
 
 		return nil
 	}
+	if cfg.DropTimestampIndex{
+		if err := indexers.DropTimeStampIndex(db, interrupt); err != nil {
+			wfcdLog.Errorf("%v", err)
+			return err
+		}
+
+		return nil
+	}
 
 	// Create server and start it.
 	server, err := newServer(cfg.Listeners, db, activeNetParams.Params,

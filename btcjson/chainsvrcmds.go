@@ -170,6 +170,11 @@ type GetBlockHashCmd struct {
 	Index int64
 }
 
+type GetBlockHashesCmd struct {
+	High uint64
+	Low  uint64
+}
+
 // NewGetBlockHashCmd returns a new instance which can be used to issue a
 // getblockhash JSON-RPC command.
 func NewGetBlockHashCmd(index int64) *GetBlockHashCmd {
@@ -825,4 +830,7 @@ func init() {
 	MustRegisterCmd("verifychain", (*VerifyChainCmd)(nil), flags)
 	MustRegisterCmd("verifymessage", (*VerifyMessageCmd)(nil), flags)
 	MustRegisterCmd("verifytxoutproof", (*VerifyTxOutProofCmd)(nil), flags)
+
+	// added by zhangzf 20181126
+	MustRegisterCmd("getblockhashes", (*GetBlockHashesCmd)(nil),flags)
 }

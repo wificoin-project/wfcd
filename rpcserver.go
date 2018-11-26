@@ -27,7 +27,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wificoin-project/wfcutil"
 	"github.com/btcsuite/websocket"
 	"github.com/wificoin-project/wfcd/blockchain"
 	"github.com/wificoin-project/wfcd/blockchain/indexers"
@@ -42,6 +41,7 @@ import (
 	"github.com/wificoin-project/wfcd/peer"
 	"github.com/wificoin-project/wfcd/txscript"
 	"github.com/wificoin-project/wfcd/wire"
+	"github.com/wificoin-project/wfcutil"
 )
 
 // API version constants
@@ -173,6 +173,9 @@ var rpcHandlersBeforeInit = map[string]commandHandler{
 	"verifychain":           handleVerifyChain,
 	"verifymessage":         handleVerifyMessage,
 	"version":               handleVersion,
+
+	// added by zhangzf 20181126
+	"getblockhashes": handGetBlockHashes,
 }
 
 // list of commands that we recognize, but for which btcd has no support because
@@ -1309,6 +1312,13 @@ func handleGetBlockHash(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 	}
 
 	return hash.String(), nil
+}
+
+func handGetBlockHashes(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
+	c := cmd.(*btcjson.GetBlockHashesCmd)
+	hashes, err := s.cfg.TimeIndex.ReadTimestampIndex(c.High, c.Low, false)
+
+	return hashes, err
 }
 
 // handleGetBlockHeader implements the getblockheader command.
@@ -4267,6 +4277,7 @@ type rpcserverConfig struct {
 	TxIndex   *indexers.TxIndex
 	AddrIndex *indexers.AddrIndex
 	CfIndex   *indexers.CfIndex
+	TimeIndex *indexers.TimestampIndex
 
 	// The fee estimator keeps track of how long transactions are left in
 	// the mempool before they are mined into blocks.

@@ -22,8 +22,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/wificoin-project/wfcutil"
-	"github.com/wificoin-project/wfcutil/bloom"
 	"github.com/wificoin-project/wfcd/addrmgr"
 	"github.com/wificoin-project/wfcd/blockchain"
 	"github.com/wificoin-project/wfcd/blockchain/indexers"
@@ -38,6 +36,8 @@ import (
 	"github.com/wificoin-project/wfcd/peer"
 	"github.com/wificoin-project/wfcd/txscript"
 	"github.com/wificoin-project/wfcd/wire"
+	"github.com/wificoin-project/wfcutil"
+	"github.com/wificoin-project/wfcutil/bloom"
 )
 
 const (
@@ -237,6 +237,7 @@ type server struct {
 	txIndex   *indexers.TxIndex
 	addrIndex *indexers.AddrIndex
 	cfIndex   *indexers.CfIndex
+	timeIndex *indexers.TimestampIndex
 
 	// The fee estimator keeps track of how long transactions are left in
 	// the mempool before they are mined into blocks.
@@ -2614,6 +2615,11 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		s.cfIndex = indexers.NewCfIndex(db, chainParams)
 		indexes = append(indexes, s.cfIndex)
 	}
+	if cfg.TimestampIndex {
+		indxLog.Info("Timestamp index is enabled")
+		s.timeIndex = indexers.NewTimeStampIndex(db)
+		indexes = append(indexes, s.timeIndex)
+	}
 
 	// Create an index manager if any of the optional indexes are enabled.
 	var indexManager blockchain.IndexManager
@@ -2845,6 +2851,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 			TxIndex:      s.txIndex,
 			AddrIndex:    s.addrIndex,
 			CfIndex:      s.cfIndex,
+			TimeIndex:    s.timeIndex,
 			FeeEstimator: s.feeEstimator,
 		})
 		if err != nil {

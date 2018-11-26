@@ -20,7 +20,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/wificoin-project/wfcutil"
 	"github.com/btcsuite/go-socks/socks"
 	flags "github.com/jessevdk/go-flags"
 	"github.com/wificoin-project/wfcd/blockchain"
@@ -31,6 +30,7 @@ import (
 	_ "github.com/wificoin-project/wfcd/database/ffldb"
 	"github.com/wificoin-project/wfcd/mempool"
 	"github.com/wificoin-project/wfcd/peer"
+	"github.com/wificoin-project/wfcutil"
 )
 
 const (
@@ -64,6 +64,7 @@ const (
 	sampleConfigFilename         = "sample-wfcd.conf"
 	defaultTxIndex               = false
 	defaultAddrIndex             = false
+	defaultTimestampIndex        = false
 )
 
 var (
@@ -161,6 +162,8 @@ type config struct {
 	DropTxIndex          bool          `long:"droptxindex" description:"Deletes the hash-based transaction index from the database on start up and then exits."`
 	AddrIndex            bool          `long:"addrindex" description:"Maintain a full address-based transaction index which makes the searchrawtransactions RPC available"`
 	DropAddrIndex        bool          `long:"dropaddrindex" description:"Deletes the address-based transaction index from the database on start up and then exits."`
+	TimestampIndex       bool          `long:"timestampindex" description:"Maintain a full timestamp-based transaction index which makes the getblockhashes RPC available"`
+	DropTimestampIndex   bool          `long:"droptimestampindex" description:"Deletes the timestamp-based transaction index from the database on start up and then exits."`
 	RelayNonStd          bool          `long:"relaynonstd" description:"Relay non-standard transactions regardless of the default settings for the active network."`
 	RejectNonStd         bool          `long:"rejectnonstd" description:"Reject non-standard transactions regardless of the default settings for the active network."`
 	lookup               func(string) ([]net.IP, error)
@@ -429,6 +432,7 @@ func loadConfig() (*config, []string, error) {
 		Generate:             defaultGenerate,
 		TxIndex:              defaultTxIndex,
 		AddrIndex:            defaultAddrIndex,
+		TimestampIndex:       defaultTimestampIndex,
 	}
 
 	// Service options which are only added on Windows.

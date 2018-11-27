@@ -54,8 +54,8 @@ func (h *BlockHeader) BlockHash() chainhash.Hash {
 	_ = writeBlockHeader(buf, 0, h)
 
 	// liudf added 20181121, need to modify later
-	return chainhash.DoubleHashH(buf.Bytes())
-	//return chainhash.DoubleHashHV2(buf.Bytes())
+	//return chainhash.DoubleHashH(buf.Bytes())
+	return chainhash.DoubleHashHV2(buf.Bytes())
 }
 
 // BtcDecode decodes r using the bitcoin protocol encoding into the receiver.

@@ -440,7 +440,7 @@ var TestNet3Params = Params{
 	Bech32HRPSegwit: "tb", // always tb for test net
 
 	// Address encoding magics
-	PubKeyHashAddrID:        0x87, // starts with w
+	PubKeyHashAddrID:        0x6f, // starts with m or n
 	ScriptHashAddrID:        0xc4, // starts with 2
 	WitnessPubKeyHashAddrID: 0x03, // starts with QW
 	WitnessScriptHashAddrID: 0x28, // starts with T7n

@@ -1316,7 +1316,7 @@ func handleGetBlockHash(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 
 func handGetBlockHashes(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
 	c := cmd.(*btcjson.GetBlockHashesCmd)
-	hashes, err := s.cfg.TimeIndex.ReadTimestampIndex(c.High, c.Low, false)
+	hashes, err := s.cfg.TimeIndex.GetTimestampIndex(c.High, c.Low)
 
 	return hashes, err
 }

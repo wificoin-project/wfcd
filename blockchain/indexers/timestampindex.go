@@ -31,8 +31,21 @@ func dbPutTimestampIndexEntry(dbTx database.Tx, hash *chainhash.Hash, blockTime 
 	return timeIndex.Put(serializedTimestamp[:], hash[:])
 }
 
+func dbReadTimestampIndex(dbTx database.Tx, high, low uint64, hashes *[]string) error {
+	timIndex := dbTx.Metadata().Bucket(timestampIndexKey)
+	return timIndex.ForEach(func(k, v []byte) error {
+		timestamp := byteOrder.Uint64(k)
+		if timestamp >= low && timestamp < high {
+			var hash chainhash.Hash
+			copy(hash[:], v)
+			*hashes = append(*hashes, hash.String())
+		}
+		return nil
+	})
+}
+
 type TimestampIndex struct {
-	db        database.DB
+	db database.DB
 }
 
 var _ Indexer = (*TxIndex)(nil)
@@ -57,7 +70,6 @@ func (idx *TimestampIndex) Create(dbTx database.Tx) error {
 
 func (idx *TimestampIndex) ConnectBlock(dbTx database.Tx, block *wfcutil.Block,
 	stxos []blockchain.SpentTxOut) error {
-
 	newTimestamp := block.MsgBlock().Header.Timestamp.Unix()
 
 	err := dbPutTimestampIndexEntry(dbTx, block.Hash(), newTimestamp)
@@ -72,22 +84,15 @@ func (idx *TimestampIndex) DisconnectBlock(dbTx database.Tx, block *wfcutil.Bloc
 	return dbRemoveTimestampIndexEntry(dbTx, block.MsgBlock().Header.Timestamp.Unix())
 }
 
-func (idx *TimestampIndex) ReadTimestampIndex(high, low uint64, activeOnly bool) ([]string, error) {
-	var hashes []string
-	err := idx.db.View(func(dbTx database.Tx) error {
-		timIndex := dbTx.Metadata().Bucket(timestampIndexKey)
-		timIndex.ForEach(func (k, v []byte) error{
-			timestamp := byteOrder.Uint64(k)
-			if timestamp >= low && timestamp <= high{
-				var hash chainhash.Hash
-				copy(hash[:], v)
-				hashes = append(hashes, hash.String())
-			}
-			return nil
-		})
+func (idx *TimestampIndex) GetTimestampIndex(high, low uint64) ([]string, error) {
+	var hashes = []string{}
+	var err error
 
-		return nil
-	})
+	if high > low {
+		err = idx.db.View(func(dbTx database.Tx) error {
+			return dbReadTimestampIndex(dbTx, high, low, &hashes)
+		})
+	}
 
 	return hashes, err
 }

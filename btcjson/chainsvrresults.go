@@ -299,6 +299,13 @@ type GetNetTotalsResult struct {
 	TimeMillis     int64  `json:"timemillis"`
 }
 
+// GetSpentInfoResult models the data returned from the getspentinfo command.
+type GetSpentInfoResult struct {
+	Txid string `json:"txid"`
+	Index uint32 `json:"index"`
+	Height uint32 `json:"height"`
+}
+
 // ScriptSig models a signature script.  It is defined separately since it only
 // applies to non-coinbase.  Therefore the field in the Vin structure needs
 // to be a pointer.

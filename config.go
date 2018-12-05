@@ -164,6 +164,8 @@ type config struct {
 	DropAddrIndex        bool          `long:"dropaddrindex" description:"Deletes the address-based transaction index from the database on start up and then exits."`
 	TimestampIndex       bool          `long:"timestampindex" description:"Maintain a full timestamp-based transaction index which makes the getblockhashes RPC available"`
 	DropTimestampIndex   bool          `long:"droptimestampindex" description:"Deletes the timestamp-based transaction index from the database on start up and then exits."`
+	SpentIndex           bool          `long:"spentindex" description:"Maintain a full spent-tx transaction index which makes the getspentinfo RPC available"`
+	DropSpentIndex       bool          `long:"dropspentindex" description:"Deletes the spent-tx transaction index from the database on start up and then exits."`
 	RelayNonStd          bool          `long:"relaynonstd" description:"Relay non-standard transactions regardless of the default settings for the active network."`
 	RejectNonStd         bool          `long:"rejectnonstd" description:"Reject non-standard transactions regardless of the default settings for the active network."`
 	lookup               func(string) ([]net.IP, error)
@@ -862,6 +864,26 @@ func loadConfig() (*config, []string, error) {
 			"options may not be activated at the same time "+
 			"because the address index relies on the transaction "+
 			"index",
+			funcName)
+		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, usageMessage)
+		return nil, nil, err
+	}
+
+	// --timestampindex and --droptimestampindex do not mix.
+	if cfg.TimestampIndex && cfg.DropTimestampIndex {
+		err := fmt.Errorf("%s: the --timestampindex and --droptimestampindex "+
+			"options may  not be activated at the same time",
+			funcName)
+		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, usageMessage)
+		return nil, nil, err
+	}
+
+	// --spentindex and --dropspentindex do not mix.
+	if cfg.SpentIndex && cfg.DropSpentIndex {
+		err := fmt.Errorf("%s: the --spentindex and --dropspentindex "+
+			"options may  not be activated at the same time",
 			funcName)
 		fmt.Fprintln(os.Stderr, err)
 		fmt.Fprintln(os.Stderr, usageMessage)

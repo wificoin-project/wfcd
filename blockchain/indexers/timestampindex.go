@@ -10,8 +10,23 @@ import (
 const timestampIndexName = "timestamp index"
 
 var (
-	timestampIndexKey = []byte("timestampbyhashidx")
+	timestampIndexKey = []byte("hashbytimestampidx")
 )
+
+// The serialized key format is:
+//
+//   Field           Type      Size
+//   block time      uint64    8 bytes
+//   -----
+//   Total: 8 bytes
+//
+// The serialized value format is:
+//
+//   Field           Type      Size
+//   block hash      uint32    32 bytes
+//   -----
+//   Total: 32 bytes
+// -----------------------------------------------------------------------------
 
 func dbRemoveTimestampIndexEntry(dbTx database.Tx, blockTime int64) error {
 	var serializedTimestamp [8]byte
@@ -48,7 +63,7 @@ type TimestampIndex struct {
 	db database.DB
 }
 
-var _ Indexer = (*TxIndex)(nil)
+var _ Indexer = (*TimestampIndex)(nil)
 
 func (idx *TimestampIndex) Init() error {
 	return nil
@@ -84,7 +99,7 @@ func (idx *TimestampIndex) DisconnectBlock(dbTx database.Tx, block *wfcutil.Bloc
 	return dbRemoveTimestampIndexEntry(dbTx, block.MsgBlock().Header.Timestamp.Unix())
 }
 
-func (idx *TimestampIndex) GetTimestampIndex(high, low uint64) ([]string, error) {
+func (idx *TimestampIndex) Get(high, low uint64) ([]string, error) {
 	var hashes = []string{}
 	var err error
 

@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/wificoin-project/wfcutil"
 	"github.com/wificoin-project/wfcd/blockchain"
 	"github.com/wificoin-project/wfcd/chaincfg"
 	"github.com/wificoin-project/wfcd/chaincfg/chainhash"
 	"github.com/wificoin-project/wfcd/database"
 	"github.com/wificoin-project/wfcd/txscript"
 	"github.com/wificoin-project/wfcd/wire"
+	"github.com/wificoin-project/wfcutil"
 )
 
 const (
@@ -728,7 +728,6 @@ func (idx *AddrIndex) indexBlock(data writeIndexData, block *wfcutil.Block,
 // This is part of the Indexer interface.
 func (idx *AddrIndex) ConnectBlock(dbTx database.Tx, block *wfcutil.Block,
 	stxos []blockchain.SpentTxOut) error {
-
 	// The offset and length of the transactions within the serialized
 	// block.
 	txLocs, err := block.TxLoc()

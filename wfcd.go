@@ -143,9 +143,16 @@ func wfcdMain(serverChan chan<- *server) error {
 
 		return nil
 	}
-	if cfg.DropTimestampIndex{
+	if cfg.DropTimestampIndex {
 		if err := indexers.DropTimeStampIndex(db, interrupt); err != nil {
 			wfcdLog.Errorf("%v", err)
+			return err
+		}
+
+		return nil
+	}
+	if cfg.DropSpentIndex {
+		if err := indexers.DropSpentIndex(db, interrupt); err != nil {
 			return err
 		}
 

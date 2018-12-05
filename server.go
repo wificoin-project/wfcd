@@ -234,10 +234,11 @@ type server struct {
 	// if the associated index is not enabled.  These fields are set during
 	// initial creation of the server and never changed afterwards, so they
 	// do not need to be protected for concurrent access.
-	txIndex   *indexers.TxIndex
-	addrIndex *indexers.AddrIndex
-	cfIndex   *indexers.CfIndex
-	timeIndex *indexers.TimestampIndex
+	txIndex    *indexers.TxIndex
+	addrIndex  *indexers.AddrIndex
+	cfIndex    *indexers.CfIndex
+	timeIndex  *indexers.TimestampIndex
+	spentIndex *indexers.SpentIndex
 
 	// The fee estimator keeps track of how long transactions are left in
 	// the mempool before they are mined into blocks.
@@ -2620,6 +2621,11 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 		s.timeIndex = indexers.NewTimeStampIndex(db)
 		indexes = append(indexes, s.timeIndex)
 	}
+	if cfg.SpentIndex {
+		indxLog.Info("Spent index is enabled")
+		s.spentIndex = indexers.NewSpentIndex(db)
+		indexes = append(indexes, s.spentIndex)
+	}
 
 	// Create an index manager if any of the optional indexes are enabled.
 	var indexManager blockchain.IndexManager
@@ -2852,6 +2858,7 @@ func newServer(listenAddrs []string, db database.DB, chainParams *chaincfg.Param
 			AddrIndex:    s.addrIndex,
 			CfIndex:      s.cfIndex,
 			TimeIndex:    s.timeIndex,
+			SpentIndex:   s.spentIndex,
 			FeeEstimator: s.feeEstimator,
 		})
 		if err != nil {

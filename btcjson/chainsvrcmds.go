@@ -10,7 +10,6 @@ package btcjson
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/wificoin-project/wfcd/wire"
 )
 
@@ -173,6 +172,11 @@ type GetBlockHashCmd struct {
 type GetBlockHashesCmd struct {
 	High uint64
 	Low  uint64
+}
+
+type GetSpentInfoCmd struct {
+	Txid  string
+	Index uint32
 }
 
 // NewGetBlockHashCmd returns a new instance which can be used to issue a
@@ -832,5 +836,6 @@ func init() {
 	MustRegisterCmd("verifytxoutproof", (*VerifyTxOutProofCmd)(nil), flags)
 
 	// added by zhangzf 20181126
-	MustRegisterCmd("getblockhashes", (*GetBlockHashesCmd)(nil),flags)
+	MustRegisterCmd("getblockhashes", (*GetBlockHashesCmd)(nil), flags)
+	MustRegisterCmd("getspentinfo", (*GetSpentInfoCmd)(nil), flags)
 }

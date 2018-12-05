@@ -176,6 +176,7 @@ var rpcHandlersBeforeInit = map[string]commandHandler{
 
 	// added by zhangzf 20181126
 	"getblockhashes": handGetBlockHashes,
+	"getspentinfo":   handGetSpentInfo,
 }
 
 // list of commands that we recognize, but for which btcd has no support because
@@ -1316,9 +1317,33 @@ func handleGetBlockHash(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 
 func handGetBlockHashes(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
 	c := cmd.(*btcjson.GetBlockHashesCmd)
-	hashes, err := s.cfg.TimeIndex.GetTimestampIndex(c.High, c.Low)
 
-	return hashes, err
+	return s.cfg.TimeIndex.Get(c.High, c.Low)
+}
+
+func handGetSpentInfo(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
+	c := cmd.(*btcjson.GetSpentInfoCmd)
+
+	txHash, err := chainhash.NewHashFromStr(c.Txid)
+	if err != nil {
+		return nil, rpcDecodeHexError(c.Txid)
+	}
+
+	tx, err := s.cfg.SpentIndex.Get(txHash, c.Index)
+	if err != nil {
+		return nil, &btcjson.RPCError{
+			Code:    btcjson.ErrRPCBlockNotFound,
+			Message: err.Error(),
+		}
+	}
+
+	spentInfoReply := btcjson.GetSpentInfoResult{
+		Txid:   tx.TxHash(),
+		Index:  tx.Index(),
+		Height: tx.Height(),
+	}
+
+	return spentInfoReply, nil
 }
 
 // handleGetBlockHeader implements the getblockheader command.
@@ -4274,10 +4299,11 @@ type rpcserverConfig struct {
 
 	// These fields define any optional indexes the RPC server can make use
 	// of to provide additional data when queried.
-	TxIndex   *indexers.TxIndex
-	AddrIndex *indexers.AddrIndex
-	CfIndex   *indexers.CfIndex
-	TimeIndex *indexers.TimestampIndex
+	TxIndex    *indexers.TxIndex
+	AddrIndex  *indexers.AddrIndex
+	CfIndex    *indexers.CfIndex
+	TimeIndex  *indexers.TimestampIndex
+	SpentIndex *indexers.SpentIndex
 
 	// The fee estimator keeps track of how long transactions are left in
 	// the mempool before they are mined into blocks.

@@ -731,6 +731,7 @@ func createVoutList(mtx *wire.MsgTx, chainParams *chaincfg.Params, filterAddrMap
 		var vout btcjson.Vout
 		vout.N = uint32(i)
 		vout.Value = wfcutil.Amount(v.Value).ToBTC()
+		vout.ValueSat = v.Value
 		vout.ScriptPubKey.Addresses = encodedAddrs
 		vout.ScriptPubKey.Asm = disbuf
 		vout.ScriptPubKey.Hex = hex.EncodeToString(v.PkScript)
@@ -1324,12 +1325,7 @@ func handGetBlockHashes(s *rpcServer, cmd interface{}, closeChan <-chan struct{}
 func handGetSpentInfo(s *rpcServer, cmd interface{}, closeChan <-chan struct{}) (interface{}, error) {
 	c := cmd.(*btcjson.GetSpentInfoCmd)
 
-	txHash, err := chainhash.NewHashFromStr(c.Txid)
-	if err != nil {
-		return nil, rpcDecodeHexError(c.Txid)
-	}
-
-	tx, err := s.cfg.SpentIndex.Get(txHash, c.Index)
+	tx, err := s.cfg.SpentIndex.Get(c.Txid, c.Index)
 	if err != nil {
 		return nil, &btcjson.RPCError{
 			Code:    btcjson.ErrRPCBlockNotFound,
@@ -2685,7 +2681,49 @@ func handleGetRawTransaction(s *rpcServer, cmd interface{}, closeChan <-chan str
 	if err != nil {
 		return nil, err
 	}
+
+	addSpentInfo(s, rawTxn)
+
 	return *rawTxn, nil
+}
+
+func addSpentInfo(s *rpcServer, rawTx *btcjson.TxRawResult) {
+	for i, _ := range rawTx.Vin {
+		if rawTx.Vin[i].Coinbase != "" {
+			continue
+		}
+
+		spentInfo, err := s.cfg.SpentIndex.Get(rawTx.Vin[i].Txid, rawTx.Vin[i].Vout)
+		if err != nil {
+			continue
+		}
+
+		rawTx.Vin[i].Value = wfcutil.Amount(spentInfo.Value()).ToBTC()
+		rawTx.Vin[i].ValueSat = spentInfo.Value()
+
+		serializeAddr := spentInfo.Address()
+		if serializeAddr[0:1][0] == 1 {
+			addr, err := wfcutil.NewAddressScriptHashFromHash(serializeAddr[1:], s.cfg.ChainParams)
+			if err == nil {
+				rawTx.Vin[i].Address = addr.String()
+			}
+		} else if serializeAddr[0:1][0] == 0 {
+			addr, err := wfcutil.NewAddressPubKeyHash(serializeAddr[1:], s.cfg.ChainParams)
+			if err == nil {
+				rawTx.Vin[i].Address = addr.String()
+			}
+		}
+	}
+
+	txid := rawTx.Txid
+	for j, _ := range rawTx.Vout {
+		spentInfo, err := s.cfg.SpentIndex.Get(txid, uint32(j))
+		if err == nil {
+			rawTx.Vout[j].SpentTxId = spentInfo.TxHash()
+			rawTx.Vout[j].SpentIndex = spentInfo.Index()
+			rawTx.Vout[j].SpentHeight = spentInfo.Height()
+		}
+	}
 }
 
 // handleGetTxOut handles gettxout commands.

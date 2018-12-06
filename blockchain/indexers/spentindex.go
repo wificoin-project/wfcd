@@ -139,10 +139,10 @@ func (idx *SpentIndex) ConnectBlock(dbTx database.Tx, block *wfcutil.Block, stxo
 			class := txscript.GetScriptClass(pkScript)
 			if class == txscript.ScriptHashTy {
 				addr[0] = addrKeyTypeScriptHash
-				copy(addr[1:], pkScript[3:23])
+				copy(addr[1:], pkScript[2:22])
 			} else if class == txscript.PubKeyHashTy {
 				addr[0] = addrKeyTypePubKeyHash
-				copy(addr[1:], pkScript[2:22])
+				copy(addr[1:], pkScript[3:23])
 			} else {
 				// unsupported address types.
 				addr[0] = 10
@@ -179,11 +179,16 @@ func (idx *SpentIndex) DisconnectBlock(dbTx database.Tx, block *wfcutil.Block, s
 	return nil
 }
 
-func (idx *SpentIndex) Get(txHash *chainhash.Hash, index uint32) (SpentIndexValue, error) {
+func (idx *SpentIndex) Get(txid string, index uint32) (SpentIndexValue, error) {
+	txHash, err := chainhash.NewHashFromStr(txid)
+	if err != nil {
+		return nil, err
+	}
+
 	key := serializeSpentIndexKey(txHash, index)
 	value := make([]byte, spentValueSize)
 
-	err := idx.db.View(func(dbTx database.Tx) error {
+	err = idx.db.View(func(dbTx database.Tx) error {
 		bucket := dbTx.Metadata().Bucket(spentIndexKey)
 		data := bucket.Get(key)
 		if len(data) != spentValueSize {
@@ -204,5 +209,5 @@ func NewSpentIndex(db database.DB) *SpentIndex {
 }
 
 func DropSpentIndex(db database.DB, interrupt <-chan struct{}) error {
-	return dropIndex(db, timestampIndexKey, timestampIndexName, interrupt)
+	return dropIndex(db, spentIndexKey, spentIndexName, interrupt)
 }

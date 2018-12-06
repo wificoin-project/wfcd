@@ -301,8 +301,8 @@ type GetNetTotalsResult struct {
 
 // GetSpentInfoResult models the data returned from the getspentinfo command.
 type GetSpentInfoResult struct {
-	Txid string `json:"txid"`
-	Index uint32 `json:"index"`
+	Txid   string `json:"txid"`
+	Index  uint32 `json:"index"`
 	Height uint32 `json:"height"`
 }
 
@@ -324,6 +324,9 @@ type Vin struct {
 	ScriptSig *ScriptSig `json:"scriptSig"`
 	Sequence  uint32     `json:"sequence"`
 	Witness   []string   `json:"txinwitness"`
+	Value     float64    `json:"value"`
+	ValueSat  int64      `json:"valueSat"`
+	Address   string     `json:"address"`
 }
 
 // IsCoinBase returns a bool to show if a Vin is a Coinbase one or not.
@@ -358,12 +361,18 @@ func (v *Vin) MarshalJSON() ([]byte, error) {
 			Vout      uint32     `json:"vout"`
 			ScriptSig *ScriptSig `json:"scriptSig"`
 			Witness   []string   `json:"txinwitness"`
+			Value     float64    `json:"value"`
+			ValueSat  int64      `json:"valueSat"`
+			Address   string     `json:"address"`
 			Sequence  uint32     `json:"sequence"`
 		}{
 			Txid:      v.Txid,
 			Vout:      v.Vout,
 			ScriptSig: v.ScriptSig,
 			Witness:   v.Witness,
+			Value:     v.Value,
+			ValueSat:  v.ValueSat,
+			Address:   v.Address,
 			Sequence:  v.Sequence,
 		}
 		return json.Marshal(txStruct)
@@ -373,11 +382,17 @@ func (v *Vin) MarshalJSON() ([]byte, error) {
 		Txid      string     `json:"txid"`
 		Vout      uint32     `json:"vout"`
 		ScriptSig *ScriptSig `json:"scriptSig"`
+		Value     float64    `json:"value"`
+		ValueSat  int64      `json:"valueSat"`
+		Address   string     `json:"address"`
 		Sequence  uint32     `json:"sequence"`
 	}{
 		Txid:      v.Txid,
 		Vout:      v.Vout,
 		ScriptSig: v.ScriptSig,
+		Value:     v.Value,
+		ValueSat:  v.ValueSat,
+		Address:   v.Address,
 		Sequence:  v.Sequence,
 	}
 	return json.Marshal(txStruct)
@@ -463,8 +478,54 @@ func (v *VinPrevOut) MarshalJSON() ([]byte, error) {
 // getrawtransaction and decoderawtransaction use the same structure.
 type Vout struct {
 	Value        float64            `json:"value"`
+	ValueSat     int64              `json:"valueSat"`
 	N            uint32             `json:"n"`
 	ScriptPubKey ScriptPubKeyResult `json:"scriptPubKey"`
+	SpentTxId    string             `json:"spentTxId"`
+	SpentIndex   uint32             `json:"spentIndex"`
+	SpentHeight  uint32             `json:"spentHeight"`
+}
+
+func (v *Vout) IsSpent() bool {
+	return len(v.SpentTxId) > 0
+}
+
+func (v *Vout) MarshalJSON() ([]byte, error) {
+	if v.IsSpent() {
+		txStruct := struct {
+			Value        float64            `json:"value"`
+			ValueSat     int64              `json:"valueSat"`
+			N            uint32             `json:"n"`
+			ScriptPubKey ScriptPubKeyResult `json:"scriptPubKey"`
+			SpentTxId    string             `json:"spentTxId"`
+			SpentIndex   uint32             `json:"spentIndex"`
+			SpentHeight  uint32             `json:"spentHeight"`
+		}{
+			Value:        v.Value,
+			ValueSat:     v.ValueSat,
+			N:            v.N,
+			ScriptPubKey: v.ScriptPubKey,
+			SpentTxId:    v.SpentTxId,
+			SpentIndex:   v.SpentIndex,
+			SpentHeight:  v.SpentHeight,
+		}
+
+		return json.Marshal(txStruct)
+	}
+
+	txStruct := struct {
+		Value        float64            `json:"value"`
+		ValueSat     int64              `json:"valueSat"`
+		N            uint32             `json:"n"`
+		ScriptPubKey ScriptPubKeyResult `json:"scriptPubKey"`
+	}{
+		Value:        v.Value,
+		ValueSat:     v.ValueSat,
+		N:            v.N,
+		ScriptPubKey: v.ScriptPubKey,
+	}
+
+	return json.Marshal(txStruct)
 }
 
 // GetMiningInfoResult models the data from the getmininginfo command.
